@@ -1,0 +1,10 @@
+[github]
+	name = Yohann Streibel
+	email = ykaribou@gmail.com
+[bitbucket]
+	name = Yohann Streibel
+	email = yohann.streibel@myscript.com
+[init]
+    templatedir = ~/.git-templates
+[user]
+    useConfigOnly = true
