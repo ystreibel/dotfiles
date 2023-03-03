@@ -14,7 +14,7 @@ DEFAULT_USER="$(whoami)"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting brew aws sublime docker gradle adb)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting fzf brew aws sublime docker gradle adb)
 
 source "$ZSH/oh-my-zsh.sh"
 

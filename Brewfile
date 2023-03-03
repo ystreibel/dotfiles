@@ -151,6 +151,8 @@ brew "wifi-password"
 brew "zbar"
 # Implementation of 'offline nested' attack by Nethemba
 brew "mfoc"
+# Command-line fuzzy finder written in Go
+brew "fzf"
 # Penetration testing framework
 cask "metasploit"
 # Reverse proxy, secure introspectable tunnels to localhost

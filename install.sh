@@ -11,25 +11,6 @@ else
   echo "Chezmoi already installed!"
 fi
 
-echo "Setting up Oh My Zsh..."
-# Check for Oh My Zsh and install if we don't have it
-if test ! "$(which omz)"; then
-  echo "Installing OhMyZsh..."
-  /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
-  echo "Installing zsh plugins..."
-  echo "Cloning zsh-autosuggestions..."
-  git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-  echo "...zsh-autosuggestions clone done!"
-  echo "Cloning zsh-syntax-highlighting..."
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-  echo "...zsh-syntax-highlighting clone done!"
-  echo "...zsh plugins install done!"
-  source "$HOME/.zshrc"
-  echo "...OhMyZsh install done!"
-else
-  echo "OhMyZsh already installed!"
-fi
-
 echo "Setting up your Homebrew"
 if test "$(uname)" = "Darwin" ; then
   # Check for Homebrew and install if we don't have it
@@ -55,6 +36,25 @@ if test "$(uname)" = "Darwin" ; then
   brew bundle --file ./Brewfile
 
   brew cleanup
+fi
+
+echo "Setting up Oh My Zsh..."
+# Check for Oh My Zsh and install if we don't have it
+if test ! "$(which omz)"; then
+  echo "Installing OhMyZsh..."
+  /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+  echo "Installing zsh plugins..."
+  echo "Cloning zsh-autosuggestions..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+  echo "...zsh-autosuggestions clone done!"
+  echo "Cloning zsh-syntax-highlighting..."
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+  echo "...zsh-syntax-highlighting clone done!"
+  echo "...zsh plugins install done!"
+  source "$HOME/.zshrc"
+  echo "...OhMyZsh install done!"
+else
+  echo "OhMyZsh already installed!"
 fi
 
 echo "Setting up Powerline fonts..."
