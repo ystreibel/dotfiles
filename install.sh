@@ -38,42 +38,74 @@ if test "$(uname)" = "Darwin" ; then
   brew cleanup
 fi
 
-echo "Setting up Oh My Zsh..."
-# Check for Oh My Zsh and install if we don't have it
-if test ! "$(which omz)"; then
-  echo "Installing OhMyZsh..."
-  /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
-  echo "Installing zsh plugins..."
-  if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"; then
-    echo "Cloning zsh-autosuggestions..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-    echo "...zsh-autosuggestions clone done!"
+if [ -n "$BASH_VERSION" ]; then
+
+  echo "Setting up Fzf"
+  if test ! "$HOME/.fzf.bash"; then
+    echo "Installing Fzf..."
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    "$HOME/.fzf/install"
+  else
+    echo "Fzf already installed!"
   fi
-  if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"; then
-    echo "Cloning zsh-syntax-highlighting..."
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-    echo "...zsh-syntax-highlighting clone done!"
+
+  echo "Setting up Oh My Bash..."
+  # Check for Oh My Zsh and install if we don't have it
+  if [ ! -f "$HOME/.oh-my-bash/oh-my-bash.sh" ]; then
+    echo "Installing OhMyBash..."
+    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+
+    echo "Installing zsh Agnoster theme"
+    if [ ! -f "$HOME/.oh-my-bash/custom/themes/agnoster" ]; then
+      git clone https://github.com/agnoster/agnoster-zsh-theme.git "$HOME/.oh-my-bash/custom/themes/agnoster"
+      echo "...zsh agnostert theme install done!"
+    else
+      echo "Zsh agnostert theme already installed!"
+    fi
+    source "$HOME/.bashrc"
+    echo "...OhMyBash install done!"
+  else
+    echo "OhMyBash already installed!"
   fi
-  echo "...zsh plugins install done!"
-  source "$HOME/.zshrc"
-  echo "...OhMyZsh install done!"
 else
-  echo "OhMyZsh already installed!"
+  echo "Setting up Oh My Zsh..."
+  # Check for Oh My Zsh and install if we don't have it
+  if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+    echo "Installing OhMyZsh..."
+    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+    echo "Installing zsh plugins..."
+    if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"; then
+      echo "Cloning zsh-autosuggestions..."
+      git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+      echo "...zsh-autosuggestions clone done!"
+    fi
+    if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"; then
+      echo "Cloning zsh-syntax-highlighting..."
+      git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+      echo "...zsh-syntax-highlighting clone done!"
+    fi
+    echo "...zsh plugins install done!"
+    source "$HOME/.zshrc"
+    echo "...OhMyZsh install done!"
+  else
+    echo "OhMyZsh already installed!"
+  fi
 fi
 
 echo "Setting up Powerline fonts..."
 # Check for Powerline fonts  and install if we don't have it
-if test ! "$HOME/Library/Fonts/Roboto\ Mono\ for\ Powerline.ttf"; then
-  echo "Installing Powerline fonts..."
-  if test "$(uname)" = "Darwin" ; then
-    # MacOS
-    font_dir="$HOME/Library/Fonts"
-  else
-    # Linux
-    font_dir="$HOME/.local/share/fonts"
-    mkdir -p "$font_dir"
-  fi
 
+if test "$(uname)" = "Darwin" ; then
+  # MacOS
+  font_dir="$HOME/Library/Fonts"
+else
+  # Linux
+  font_dir="$HOME/.local/share/fonts"
+  mkdir -p "$font_dir"
+fi
+
+echo "Installing Powerline fonts..."
+if [ ! -f "$font_dir/Roboto\ Mono\ for\ Powerline.ttf" ]; then
   echo "Copying fonts..."
   curl -S -o "$font_dir/Roboto Mono for Powerline.ttf" https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf
 
