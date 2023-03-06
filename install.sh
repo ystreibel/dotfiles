@@ -11,8 +11,8 @@ else
   echo "Chezmoi already installed!"
 fi
 
-echo "Setting up your Homebrew"
 if test "$(uname)" = "Darwin" ; then
+  echo "Setting up your Homebrew"
   # Check for Homebrew and install if we don't have it
   if test ! "$(which brew)"; then
     echo "Installing Homebrew..."
@@ -44,12 +44,16 @@ if test ! "$(which omz)"; then
   echo "Installing OhMyZsh..."
   /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
   echo "Installing zsh plugins..."
-  echo "Cloning zsh-autosuggestions..."
-  git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-  echo "...zsh-autosuggestions clone done!"
-  echo "Cloning zsh-syntax-highlighting..."
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-  echo "...zsh-syntax-highlighting clone done!"
+  if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"; then
+    echo "Cloning zsh-autosuggestions..."
+    git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+    echo "...zsh-autosuggestions clone done!"
+  fi
+  if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"; then
+    echo "Cloning zsh-syntax-highlighting..."
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+    echo "...zsh-syntax-highlighting clone done!"
+  fi
   echo "...zsh plugins install done!"
   source "$HOME/.zshrc"
   echo "...OhMyZsh install done!"
@@ -85,7 +89,19 @@ else
   echo "Powerline fonts already installed!"
 fi
 
-echo "Setting up you ssh key"
+if test "$(uname)" = "Darwin" ; then
+  echo "Setting up your iTerm2 profile"
+  if test ! "/Applications/iTerm.app"; then
+    echo "Copying iTerm2 profile..."
+    cp "$HOME/.iterm/iTermProfile.json" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/"
+    echo "...iTerm2 profile copyed!"
+    echo "Load Profile called Default in the iTerm2 settings."
+  else
+    echo "iTerm2 didn't installed!"
+  fi
+fi
+
+echo "Setting up your ssh key"
 github_settings_url="https://github.com/settings/keys"
 bitbucket_settings_url="https://scm.corp.myscript.com/plugins/servlet/ssh/account/keys"
 ssh_public_key_file="${HOME}/.ssh/id_ed25519.pub"
