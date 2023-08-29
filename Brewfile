@@ -4,6 +4,7 @@ tap "ferdium/ferdium"
 tap "gromgit/fuse"
 tap "homebrew/bundle"
 tap "homebrew/cask"
+tap "homebrew/cask-fonts"
 tap "homebrew/core"
 tap "pr0d1r2/python2"
 tap "shivammathur/php"
@@ -160,6 +161,8 @@ brew "rust"
 brew "scrcpy"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
+# Cross-shell prompt for astronauts
+brew "starship"
 # User interface to the TELNET protocol
 brew "telnet"
 # Terminal multiplexer
@@ -176,6 +179,10 @@ brew "wget"
 brew "wifi-password"
 # Suite of barcodes-reading tools
 brew "zbar"
+# Real-time type-ahead completion for Zsh
+brew "zsh-autocomplete"
+# Fish-like fast/unobtrusive autosuggestions for zsh
+brew "zsh-autosuggestions"
 # Fish shell like syntax highlighting for zsh
 brew "zsh-syntax-highlighting"
 # Read-write NTFS driver for FUSE
@@ -190,8 +197,14 @@ cask "android-platform-tools"
 cask "android-studio"
 # Multi-platform multi-messaging app
 cask "ferdium"
+# Developer targeted fonts with a high number of glyphs
+cask "font-jetbrains-mono-nerd-font"
 # Set which graphics card to use
 cask "gswitch"
+# Terminal emulator as alternative to Apple's Terminal app
+cask "iterm2"
+# GPU-based terminal emulator
+cask "kitty"
 # File system integration
 cask "macfuse"
 # Penetration testing framework
@@ -203,7 +216,6 @@ cask "rq"
 mas "Amphetamine", id: 937984704
 mas "Codeshot", id: 1541665460
 mas "Compare Folders", id: 816042486
-mas "DeskApp for YouTube", id: 1180531112
 mas "GarageBand", id: 682658836
 mas "Image2icon", id: 992115977
 mas "iMovie", id: 408981434
@@ -214,7 +226,4 @@ mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Slack", id: 803453959
 mas "The Unarchiver", id: 425424353
-mas "Twitter", id: 1482454543
-mas "WhatsApp", id: 1147396723
-mas "WireGuard", id: 1451685025
 mas "Xcode", id: 497799835
