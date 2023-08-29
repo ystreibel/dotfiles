@@ -18,5 +18,5 @@ alias docker-clean=' \
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias firefox="/Applications/Firefox.app/Contents/MacOS/firefox"
 
-Minicom RFLINK
+#Minicom RFLINK
 alias rflink="minicom -D /dev/cu.usbserial-144140 -b 57600"
