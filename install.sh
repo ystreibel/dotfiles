@@ -2,134 +2,148 @@
 
 echo "Setting up your Mac..."
 
+# Function to check if a command exists
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Function to install software if not already installed
+install_if_not_installed() {
+  software_name="$1"
+  install_command="$2"
+  if ! command_exists "$software_name"; then
+    echo "Installing $software_name..."
+    eval "$install_command"
+    echo "...$software_name install done!"
+  else
+    echo "$software_name already installed!"
+  fi
+}
+
 echo "Setting up Chezmoi..."
-if test ! "$(which chezmoi)"; then
-  echo "Installing Chezmoi..."
-  sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply "ystreibel"
-  echo "...Chezmoi install done!"
-else
-  echo "Chezmoi already installed!"
+install_if_not_installed "chezmoi" 'sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply "ystreibel"'
+
+echo "Setting up Powerline fonts..."
+font_dir="$HOME/Library/Fonts"  # Default for macOS
+
+if [ "$(uname)" != "Darwin" ]; then
+  font_dir="$HOME/.local/share/fonts"  # Linux
+  mkdir -p "$font_dir"
 fi
 
-if test "$(uname)" = "Darwin" ; then
-  echo "Setting up your Homebrew"
-  # Check for Homebrew and install if we don't have it
-  if test ! "$(which brew)"; then
-    echo "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo "Installing Powerline fonts..."
+font_name="Roboto Mono for Powerline.ttf"
+font_url="https://github.com/powerline/fonts/raw/master/RobotoMono/$font_name"
 
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    echo "...Homebrew install done!"
-  else
-    echo "Homebrew already installed!"
+if [ ! -f "$font_dir/$font_name" ]; then
+  echo "Copying fonts..."
+  curl -S -o "$font_dir/$font_name" "$font_url"
+
+  if which fc-cache >/dev/null 2>&1 ; then
+    echo "Resetting font cache, this may take a moment..."
+    fc-cache -f "$font_dir"
   fi
 
-  # Update Homebrew recipes
-  brew update
-
-  # Upgrade any already-installed formulae.
-  brew upgrade
-
-  # Install all our dependencies with bundle (See Brewfile)
-  brew tap homebrew/bundle
-  brew bundle --file ./Brewfile
-
-  brew cleanup
+  echo "Powerline fonts installed to $font_dir"
+  echo "...Powerline fonts install done!"
+else
+  echo "Powerline fonts already installed!"
 fi
 
-if [ -n "$BASH_VERSION" ]; then
+# Check if running on macOS
+if [ "$(uname)" = "Darwin" ]; then
+  # Set up Homebrew
+  echo "Setting up your Homebrew"
+  install_if_not_installed "homebrew" '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 
+  # Update and upgrade Homebrew
+  brew update
+  brew upgrade
+
+  # Install dependencies using Brewfile
+  brew tap homebrew/bundle
+  brew bundle --file ./Brewfile
+  brew cleanup
+
+  # Clone iTerm2-color-schemes
+  echo "Installing iTerm2-color-schemes..."
+  git clone https://github.com/mbadolato/iTerm2-Color-Schemes  ~/.config/iterm2/iterm2-color-schemes
+
+  echo "Setting up your iTerm2 profile"
+  if test ! "/Applications/iTerm.app"; then
+    echo "Copying iTerm2 profile..."
+    defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/.iterm/"
+    defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+    echo "...iTerm2 profile copyed!"
+    echo "Load Profile called Default in the iTerm2 settings."
+  else
+    echo "iTerm2 didn't installed!"
+  fi
+else
   echo "Setting up Fzf"
-  if test ! "$HOME/.fzf.bash"; then
+  if [ ! -d "$HOME/.fzf" ]; then
     echo "Installing Fzf..."
     git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
     "$HOME/.fzf/install"
   else
     echo "Fzf already installed!"
   fi
+fi
+
+if [ -n "$BASH_VERSION" ]; then
+  oh_my_bash_path="$HOME/.oh-my-bash"
+  oh_my_bash_installer_url="https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh"
 
   echo "Setting up Oh My Bash..."
-  # Check for Oh My Zsh and install if we don't have it
-  if [ ! -f "$HOME/.oh-my-bash/oh-my-bash.sh" ]; then
+  if [ ! -f "$oh_my_bash_path/oh-my-bash.sh" ]; then
     echo "Installing OhMyBash..."
-    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+    /bin/sh -c "$(curl -fsSL $oh_my_bash_installer_url)"
 
-    echo "Installing zsh Agnoster theme"
-    if [ ! -f "$HOME/.oh-my-bash/custom/themes/agnoster" ]; then
-      git clone https://github.com/agnoster/agnoster-zsh-theme.git "$HOME/.oh-my-bash/custom/themes/agnoster"
-      echo "...zsh agnostert theme install done!"
-    else
-      echo "Zsh agnostert theme already installed!"
-    fi
     source "$HOME/.bashrc"
     echo "...OhMyBash install done!"
   else
     echo "OhMyBash already installed!"
   fi
-else
+fi
+
+if [ -n "$ZSH_VERSION" ]; then
+  oh_my_zsh_path="$HOME/.oh-my-zsh"
+  oh_my_zsh_installer_url="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh"
+
   echo "Setting up Oh My Zsh..."
-  # Check for Oh My Zsh and install if we don't have it
-  if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+  if [ ! -f "$oh_my_zsh_path/oh-my-zsh.sh" ]; then
     echo "Installing OhMyZsh..."
-    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+    /bin/sh -c "$(curl -fsSL $oh_my_zsh_installer_url)"
+
+    zsh_custom_plugins="${ZSH_CUSTOM:-$oh_my_zsh_path/custom}/plugins"
+    zsh_autocomplete_plugin="$zsh_custom_plugins/zsh-autocomplete"
+    zsh_autosuggestions_plugin="$zsh_custom_plugins/zsh-autosuggestions"
+    zsh_syntax_highlighting_plugin="$zsh_custom_plugins/zsh-syntax-highlighting"
+
+    install_zsh_plugin() {
+      plugin_name="$1"
+      plugin_url="$2"
+      plugin_path="$3"
+
+      if [ ! -d "$plugin_path" ]; then
+        echo "Cloning $plugin_name..."
+        git clone "$plugin_url" "$plugin_path"
+        echo "...$plugin_name clone done!"
+      fi
+    }
+
     echo "Installing zsh plugins..."
-    if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"; then
-      echo "Cloning zsh-autosuggestions..."
-      git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-      echo "...zsh-autosuggestions clone done!"
-    fi
-    if test ! "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"; then
-      echo "Cloning zsh-syntax-highlighting..."
-      git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-      echo "...zsh-syntax-highlighting clone done!"
-    fi
+    install_zsh_plugin "zsh-autocomplete" "https://github.com/marlonrichert/zsh-autocomplete" "$zsh_autocomplete_plugin"
+    install_zsh_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions" "$zsh_autosuggestions_plugin"
+    install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git" "$zsh_syntax_highlighting_plugin"
     echo "...zsh plugins install done!"
+
     source "$HOME/.zshrc"
     echo "...OhMyZsh install done!"
   else
     echo "OhMyZsh already installed!"
-  fi
-fi
-
-echo "Setting up Powerline fonts..."
-# Check for Powerline fonts  and install if we don't have it
-
-if test "$(uname)" = "Darwin" ; then
-  # MacOS
-  font_dir="$HOME/Library/Fonts"
-else
-  # Linux
-  font_dir="$HOME/.local/share/fonts"
-  mkdir -p "$font_dir"
-fi
-
-echo "Installing Powerline fonts..."
-if [ ! -f "$font_dir/Roboto\ Mono\ for\ Powerline.ttf" ]; then
-  echo "Copying fonts..."
-  curl -S -o "$font_dir/Roboto Mono for Powerline.ttf" https://github.com/powerline/fonts/raw/master/RobotoMono/Roboto%20Mono%20for%20Powerline.ttf
-
-  # Reset font cache on Linux
-  if which fc-cache >/dev/null 2>&1 ; then
-      echo "Resetting font cache, this may take a moment..."
-      fc-cache -f "$font_dir"
-  fi
-  echo "Powerline fonts installed to $font_dir"
-
-  echo "...Powerline fonts install done!"
-else
-  echo "Powerline fonts already installed!"
-fi
-
-if test "$(uname)" = "Darwin" ; then
-  echo "Setting up your iTerm2 profile"
-  if test ! "/Applications/iTerm.app"; then
-    echo "Copying iTerm2 profile..."
-    cp "$HOME/.iterm/iTermProfile.json" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/"
-    echo "...iTerm2 profile copyed!"
-    echo "Load Profile called Default in the iTerm2 settings."
-  else
-    echo "iTerm2 didn't installed!"
   fi
 fi
 
